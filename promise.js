@@ -9,12 +9,7 @@
     this.pending = true;
   };
 
-  var isPseudoPromise = function(promise) {
-    return (promise && promise.constructor !== Promise && typeof promise.then === 'function');
-  };
-
   var isPromise = function(promise) {
-    // It's Promise or pseudo promise
     return (promise && promise.constructor === Promise);
   }
 
@@ -25,7 +20,7 @@
       try {
         if (callback && typeof callback === 'function') {
           returnValue = callback.apply(undefined, value || arguments);
-          if (isPromise(returnValue) || isPseudoPromise(returnValue)) {
+          if (isPromise(returnValue)) {
             linkPromises(returnValue, nextPromise);
           }
           else {
@@ -43,11 +38,6 @@
   };
 
   var linkPromises = function(promiseA, promiseB) {
-    if (isPseudoPromise(promiseA)) {
-      promiseB.then = promiseA.then;
-      return;
-    }
-
     if (promiseA.pending) {
       promiseA.linkedPromises.push(promiseB);
       return;
