@@ -12,9 +12,10 @@ USE IT
 
 1. Go to your terminal
 2. `git clone https://github.com/dmarcos/promise.git`
-3. Grab the file promise.js. No dependencies.
+3. cd promise
+4. Grab the file promise.js. No dependencies.
 
-EXAMPLES HERE
+EXAMPLES HEREg
 
 TEST IT
 -------
