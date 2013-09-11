@@ -3,101 +3,76 @@
   'use strict';
 
   var Promise = function() {
-    this.onFulfilledCallbacks = [];
-    this.onRejectedCallbacks = [];
-    this.linkedPromises = [];
+    this.thenTargets = [];
     this.pending = true;
   };
 
   var isPromise = function(promise) {
-    return promise && promise.constructor === Promise;
+    return promise && promise instanceof Promise;
   }
 
   var isPseudoPromise = function(promise) {
-    return promise && promise.constructor !== Promise && typeof promise.then == 'function';
+    return promise && typeof promise.then == 'function';
   }
 
-  var castPseudoPromise = function(pseudoPromise) {
-    var promise = new Promise();
-    promise.pseudo = true;
-    promise.then = function(onFulfilledArg, onRejectedArg) {
-      var onFulfilled = function() {
-        return pseudoPromise.then(onFulfilledArg);
-      };
-      var onRejected = function() {
-        return pseudoPromise.then(null, onRejectedArg);
-      };
-      this.prototype.then.apply(this, onFulfilled, onRejected);
-    };
-    return promise;
-  }
-
-  Promise.prototype.resolve = function(nextPromise, onFulfilled, onRejected) {
-    var currentPromise = this;
-    return function() {
-      var returnValue;
-      var callback;
-      var value;
-      try {
-        if(currentPromise.fulfilled) {
-          callback = onFulfilled;
-          value = currentPromise.value;
-        }
-        if (currentPromise.rejected) {
-          callback = onRejected;
-          value = currentPromise.reason;
-        }
-        if (callback && typeof callback === 'function') {
-          returnValue = callback.apply(undefined, value || arguments);
-        } else {
-          returnValue = currentPromise;
-        }
-        currentPromise.resolvePromise(nextPromise, returnValue, onFulfilled, onRejected);
-      }
-      catch(err) {
-        nextPromise.reject(err);
-        return;
-      }
-    };
-  };
-
-  Promise.prototype.resolvePromise = function(promise, value, onFulfilled, onRejected) {
+  Promise.prototype.resolve = function(promise, value) {
     if (promise === value) {
       throw new TypeError('resolve: arguments cannot be the same object')
     }
-    if(isPromise(value)) {
-      if (value.pending) {
-        value.linkedPromises.push(promise);
-        return;
-      }
-      if(value.fulfilled) {
-        promise.fulfil.apply(promise, value.value);
-        return;
-      }
-      if(value.rejected) {
-        promise.reject.apply(promise, value.reason);
-        return;
-      }
-    } else if (isPseudoPromise(value)) {
-      this.pseudo = value.then;
+    if (promise === value) {
+      throw new TypeError('resolve: arguments cannot be the same object')
+    }
+    if (isPromise(value) || isPseudoPromise(value)) {
+      value.then(promise.fulfil.bind(promise), promise.reject.bind(promise))
     } else {
       promise.fulfil(value);
     }
+  };
 
+  Promise.prototype.handleThenTargets = function() {
+    var callbackResult;
+    var callback;
+    var value;
+    var i;
+
+    for (i=0;i<this.thenTargets.length;++i) {
+      if (this.fulfilled) {
+        callback = this.thenTargets[i].onFulfilled;
+        value = this.value;
+      }
+      if (this.rejected) {
+        callback = this.thenTargets[i].onRejected;
+        value = this.reason;
+      }
+      try {
+        if (callback && typeof callback === 'function') {
+          callbackResult = callback.apply(undefined, value);
+        } else {
+          callbackResult = this;
+        }
+        this.resolve(this.thenTargets[i], callbackResult);
+      }
+      catch(err) {
+        this.thenTargets[i].reject(err);
+      }
+    }
+    this.thenTargets = [];
+  };
+
+  Promise.prototype.handleThen = function() {
+    if (!this.pending) {
+      this.handleThenTargets();
+    }
   };
 
   Promise.prototype.then = function(onFulfilled, onRejected) {
-    var nextPromise = new Promise();
-    nextPromise.new = true;
-    var value;
-    var reason;
-    if (this.fulfilled || this.rejected) {
-      setTimeout(this.resolve(nextPromise, onFulfilled, onRejected),0);
-    } else {
-      this.onFulfilledCallbacks.push(this.resolve(nextPromise, onFulfilled, onRejected));
-      this.onRejectedCallbacks.push(this.resolve(nextPromise, onFulfilled, onRejected));
-    }
-    return nextPromise;
+    var thenResult = new Promise();
+    // The execution of then is asynchronous so we need to have this info available later.
+    thenResult.onFulfilled = onFulfilled;
+    thenResult.onRejected = onRejected;
+    this.thenTargets.push(thenResult);
+    setTimeout(this.handleThen.bind(this),0);
+    return thenResult;
   };
 
   Promise.prototype.fulfil = function() {
@@ -110,18 +85,8 @@
     this.pending = false;
     this.value = arguments;
 
-    for (i = 0; i < this.onFulfilledCallbacks.length; ++i) {
-      this.onFulfilledCallbacks[i].apply(this, arguments);
-    }
-    this.onFulfilledCallbacks = [];
-
-    for (i=0; i < this.linkedPromises.length; ++i) {
-      linkedPromise = this.linkedPromises[i];
-      linkedPromise.fulfil.apply(linkedPromise, arguments);
-    }
-    this.linkedPromises = [];
-
-  }
+    this.handleThenTargets();
+  };
 
   Promise.prototype.reject = function() {
     var i;
@@ -132,17 +97,7 @@
     this.reason = arguments;
     this.rejected = true;
     this.pending = false;
-    for (i = 0; i < this.onRejectedCallbacks.length; ++i) {
-      this.onRejectedCallbacks[i].apply(this, arguments);
-    }
-    this.onRejectedCallbacks = [];
-
-    for (i=0; i < this.linkedPromises.length; ++i) {
-      linkedPromise = this.linkedPromises[i];
-      linkedPromise.reject.apply(linkedPromise, arguments);
-    }
-    this.linkedPromises = [];
-
+    this.handleThenTargets();
   }
 
   this.Promise = Promise;
