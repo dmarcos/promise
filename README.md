@@ -6,10 +6,15 @@ Zen implementation of promises fully compliant with the [promises/A+ spec](https
 USE IT
 ------
 
-1. Go to your terminal
-2. `git clone https://github.com/dmarcos/promise.git`
-3. `cd promise`
-4. Grab the file promise.js. No dependencies.
+It's a single file with no external dependencies.
+
+### Grub it from Github ###
+
+`curl https://raw.github.com/dmarcos/promise/master/promise.js -o promise.js`
+
+### Install it with bower ###
+
+`bower install promise`
 
 EXAMPLES HERE
 
