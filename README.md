@@ -8,7 +8,7 @@ USE IT
 
 It's a single file with no external dependencies.
 
-### Grub it from Github ###
+### Grab it from Github ###
 
 `curl https://raw.github.com/dmarcos/promise/master/promise.js -o promise.js`
 
