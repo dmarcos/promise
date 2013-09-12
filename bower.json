@@ -7,8 +7,11 @@
     "node_modules",
     "**/.*",
     "**/*.json",
-    "**/*.html"
+    "**/*.html",
+    "**/*.md"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "promise": "*"
+  },
   "devDependencies": {}
 }
