@@ -1,7 +1,7 @@
 Promise.js
 ==========
 
-Zen implementation of promises fully compliany to the [promises/A+ spec](https://github.com/promises-aplus/promises-spec).
+Zen implementation of promises fully compliant with the [promises/A+ spec](https://github.com/promises-aplus/promises-spec).
 
 USE IT
 ------
