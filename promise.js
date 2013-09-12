@@ -9,18 +9,18 @@
 
   var isPromise = function(promise) {
     return promise && promise instanceof Promise;
-  }
+  };
 
   var isPseudoPromise = function(promise) {
     return promise && typeof promise.then == 'function';
-  }
+  };
 
   Promise.prototype.resolve = function(promise, value) {
     if (promise === value) {
-      throw new TypeError('resolve: arguments cannot be the same object')
+      throw new TypeError('resolve: arguments cannot be the same object');
     }
     if (isPromise(value) || isPseudoPromise(value)) {
-      value.then(promise.fulfil.bind(promise), promise.reject.bind(promise))
+      value.then(promise.fulfil.bind(promise), promise.reject.bind(promise));
     } else {
       promise.fulfil(value);
     }
@@ -95,7 +95,7 @@
     this.rejected = true;
     this.pending = false;
     this.handleThenTargets();
-  }
+  };
 
   this.Promise = Promise;
 
