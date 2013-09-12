@@ -10,8 +10,6 @@
     "**/*.html",
     "**/*.md"
   ],
-  "dependencies": {
-    "promise": "*"
-  },
+  "dependencies": {},
   "devDependencies": {}
 }
