@@ -19,9 +19,6 @@
     if (promise === value) {
       throw new TypeError('resolve: arguments cannot be the same object')
     }
-    if (promise === value) {
-      throw new TypeError('resolve: arguments cannot be the same object')
-    }
     if (isPromise(value) || isPseudoPromise(value)) {
       value.then(promise.fulfil.bind(promise), promise.reject.bind(promise))
     } else {

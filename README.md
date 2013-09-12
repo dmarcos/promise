@@ -1,11 +1,7 @@
 Promise.js
 ==========
 
-Zen implementation of promises following the [promises/A+ spec](https://github.com/promises-aplus/promises-spec).
-
-It passes 239 / 243 tests from the [spec](https://github.com/promises-aplus/promises-spec) on 09/11/2013.
-
-pseudo promises is the only part of the spec not supported
+Zen implementation of promises fully compliany to the [promises/A+ spec](https://github.com/promises-aplus/promises-spec).
 
 USE IT
 ------
