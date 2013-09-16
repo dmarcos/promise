@@ -6,7 +6,7 @@ Zen implementation of promises fully compliant with the [promises/A+ spec](https
 USE IT
 ------
 
-It's a single file with no external dependencies.
+Single file with no external dependencies.
 
 ### Grab it from Github ###
 

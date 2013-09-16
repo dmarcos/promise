@@ -91,9 +91,10 @@
     if (this.fulfilled) {
       return;
     }
-    this.reason = arguments;
     this.rejected = true;
     this.pending = false;
+    this.reason = arguments;
+
     this.handleThenTargets();
   };
 
