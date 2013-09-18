@@ -2,9 +2,32 @@
 
   'use strict';
 
-  var Promise = function() {
+  // If there's already an
+  // implementation of Promises available
+  if (this.Promise) {
+    return;
+  }
+
+  var PromiseResolver = function(promise) {
+    this.promise = promise;
+  };
+
+  PromiseResolver.prototype.resolve = function(value) {
+    this.promise.fulfil(value);
+  };
+
+  PromiseResolver.prototype.reject = function(reason) {
+    this.promise.reject(reason);
+  };
+
+  var Promise = function(resolveFunction) {
+    var resolver;
     this.thenTargets = [];
     this.pending = true;
+    if (resolveFunction && typeof resolveFunction == 'function') {
+      resolver = new PromiseResolver(this);
+      resolveFunction(resolver);
+    }
   };
 
   var isPromise = function(promise) {
@@ -72,7 +95,7 @@
     return thenResult;
   };
 
-  Promise.prototype.fulfil = function() {
+  Promise.prototype.fulfil = Promise.prototype.fulfill = function() {
     var i;
     var linkedPromise;
     if (this.rejected) {
