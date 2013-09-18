@@ -12,12 +12,12 @@
     this.promise = promise;
   };
 
-  PromiseResolver.prototype.resolve = function(value) {
-    this.promise.fulfil(value);
+  PromiseResolver.prototype.resolve = function() {
+    this.promise.fulfil.apply(this.promise, arguments);
   };
 
-  PromiseResolver.prototype.reject = function(reason) {
-    this.promise.reject(reason);
+  PromiseResolver.prototype.reject = function() {
+    this.promise.reject.apply(this.promise, arguments);
   };
 
   var Promise = function(resolveFunction) {
