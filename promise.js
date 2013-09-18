@@ -2,32 +2,10 @@
 
   'use strict';
 
-  // If there's already an
-  // implementation of Promises available
-  if (this.Promise) {
-    return;
-  }
-
-  var PromiseResolver = function(promise) {
-    this.promise = promise;
-  };
-
-  PromiseResolver.prototype.resolve = function() {
-    this.promise.fulfil.apply(this.promise, arguments);
-  };
-
-  PromiseResolver.prototype.reject = function() {
-    this.promise.reject.apply(this.promise, arguments);
-  };
-
-  var Promise = function(resolveFunction) {
+  var Promise = function() {
     var resolver;
     this.thenTargets = [];
     this.pending = true;
-    if (resolveFunction && typeof resolveFunction == 'function') {
-      resolver = new PromiseResolver(this);
-      resolveFunction(resolver);
-    }
   };
 
   var isPromise = function(promise) {
@@ -104,7 +82,6 @@
     this.fulfilled = true;
     this.pending = false;
     this.value = arguments;
-
     this.handleThenTargets();
   };
 
@@ -117,7 +94,6 @@
     this.rejected = true;
     this.pending = false;
     this.reason = arguments;
-
     this.handleThenTargets();
   };
 
