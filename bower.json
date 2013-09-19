@@ -3,7 +3,7 @@
   "version": "0.2.1",
   "main": "promise.js",
   "ignore": [
-    "tests",
+    "test",
     "node_modules",
     "**/.*",
     "**/*.json",
